@@ -9,6 +9,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" th:href="@{/style.css}">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
   <style>
     /* Наша нова рожева кнопка */
     .btn-pink {
@@ -123,11 +125,13 @@
       <div class="modal-body p-4">
         <div class="mb-3">
           <label class="form-label fw-bold text-muted" id="txt-modal-name">Ваше ПІБ</label>
-          <input type="text" id="userName" class="form-control form-control-lg bg-light" onkeydown="if(event.key === 'Enter') submitLogin()">
+          <input type="text" id="userName" class="form-control form-control-lg bg-light" placeholder="Іван Іванов" onkeydown="if(event.key === 'Enter') submitLogin()">
+          <div class="invalid-feedback">Будь ласка, введіть коректне ім'я.</div>
         </div>
         <div class="mb-4">
           <label class="form-label fw-bold text-muted" id="txt-modal-phone">Номер телефону</label>
-          <input type="text" id="userPhone" class="form-control form-control-lg bg-light" onkeydown="if(event.key === 'Enter') submitLogin()">
+          <input type="tel" id="userPhone" class="form-control form-control-lg bg-light" onkeydown="if(event.key === 'Enter') submitLogin()">
+          <div class="invalid-feedback">Невірний формат номера телефону.</div>
         </div>
         <button class="btn btn-olive btn-lg w-100" onclick="submitLogin()"><span id="txt-modal-btn-continue">Продовжити</span> <i class="bi bi-arrow-right"></i></button>
       </div>
@@ -268,6 +272,15 @@
     document.getElementById('txt-modal-ticket-title').innerHTML = `<i class="bi bi-check-circle-fill me-2"></i>${dict.modalTicketTitle}`;
     document.getElementById('txt-modal-time').innerText = dict.modalTime;
 
+    // Оновлюємо текст на кнопках послуг
+    document.querySelectorAll('.btn-service').forEach(btn => {
+      const serviceKey = btn.getAttribute('data-service');
+      const span = btn.querySelector('span'); // Знаходимо текст всередині кнопки
+      if (span && dict.services[serviceKey]) {
+        span.innerText = dict.services[serviceKey];
+      }
+    });
+
     checkMyTicket(); // Оновлюємо кнопку в хедері
     updateDashboard(); // Оновлюємо динамічні дані
   }
@@ -285,6 +298,13 @@
   const adminModal = new bootstrap.Modal(document.getElementById('adminLoginModal'));
   let currentTicket = null;
 
+  const phoneInputField = document.querySelector("#userPhone");
+  const phoneInput = window.intlTelInput(phoneInputField, {
+    preferredCountries: ["ua", "pl", "gb", "us"],
+    initialCountry: "ua", // По дефолту Україна
+    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+  });
+
   // Обробка авто-послуги (з конвертера)
   const urlParams = new URLSearchParams(window.location.search);
   const autoService = urlParams.get('auto');
@@ -296,9 +316,31 @@
   }
 
   function submitLogin() {
-    const name = document.getElementById('userName').value.trim();
-    const phone = document.getElementById('userPhone').value.trim();
-    if(!name || !phone) return;
+    const nameInput = document.getElementById('userName');
+    const phoneElement = document.getElementById('userPhone');
+    const name = nameInput.value.trim();
+
+    let isValid = true;
+
+    // Валідація імені (мінімум 2 символи)
+    if(name.length < 2) {
+      nameInput.classList.add('is-invalid');
+      isValid = false;
+    } else {
+      nameInput.classList.remove('is-invalid');
+    }
+
+    // Валідація телефону (бібліотека сама знає формати всіх країн!)
+    if(!phoneInput.isValidNumber()) {
+      phoneElement.classList.add('is-invalid');
+      isValid = false;
+    } else {
+      phoneElement.classList.remove('is-invalid');
+    }
+
+    if(!isValid) return; // Якщо є помилки - зупиняємось
+
+    const phone = phoneInput.getNumber(); // Отримуємо номер у правильному міжнародному форматі (+380...)
 
     fetch(`/api/login?name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}`, { method: 'POST' })
             .then(() => {
