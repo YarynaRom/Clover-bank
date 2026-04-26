@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Електронна черга - CloverBank</title>
+  <link rel="icon" type="image/png" href="/images/clover-logo.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/style.css}">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    /* Наша нова рожева кнопка */
+    .btn-pink {
+      background-color: #DB7093;
+      border-color: #DB7093;
+      color: white;
+      transition: all 0.3s;
+    }
+    .btn-pink:hover {
+      background-color: #c45b7e; /* Трохи темніший рожевий при наведенні */
+      border-color: #c45b7e;
+      color: white;
+      transform: translateY(-2px); /* Кнопка трохи "підстрибуватиме" */
+    }
+    .next-ticket-item:last-child { border-bottom: none !important; margin-bottom: 0 !important; padding-bottom: 0 !important; }
+    .lang-btn { transition: all 0.2s; border: 1px solid rgba(255,255,255,0.5); }
+    .lang-btn:hover { background-color: rgba(255,255,255,0.2); border-color: white; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark navbar-custom mb-5 py-3 shadow-sm">
+  <div class="container">
+       <span class="navbar-brand mb-0 h3 fw-bold d-flex align-items-center">
+    <svg fill="white" height="34" width="34" class="me-2" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512.002 512.002" xml:space="preserve">
+        <g><path d="M491.917,312.599c-17.144-17.143-38.916-31.057-64.722-41.404h-134.55l95.513,95.513l-21.466,21.466l-95.513-95.513 v134.55c10.347,25.805,24.261,47.578,41.405,64.721c13.377,13.377,30.955,20.066,48.527,20.068 c17.576,0.001,35.146-6.688,48.527-20.068c12.625-12.625,19.751-29.425,20.067-47.304l0.259-14.65l14.65-0.259 c17.88-0.317,34.68-7.443,47.305-20.068C518.675,382.894,518.675,339.356,491.917,312.599z"/></g>
+        <g><path d="M145.309,388.174l-21.466-21.466l95.513-95.513H84.806c-25.805,10.347-47.578,24.261-64.721,41.405 c-26.757,26.757-26.757,70.295,0,97.053c12.625,12.625,29.425,19.751,47.304,20.067l14.65,0.259l0.259,14.65 c0.317,17.88,7.443,34.68,20.068,47.305c26.756,26.756,70.294,26.757,97.053,0c17.142-17.146,31.056-38.917,41.403-64.724v-134.55 L145.309,388.174z"/></g>
+        <g><path d="M491.917,102.379c-12.625-12.625-29.425-19.751-47.304-20.067l-14.65-0.259l-0.259-14.65 c-0.317-17.88-7.443-34.68-20.067-47.304C396.675,7.139,379.441,0,361.11,0c-18.331,0-35.564,7.138-48.527,20.1 c-17.143,17.144-31.057,38.915-41.404,64.721v134.551l95.513-95.513l21.466,21.466l-95.513,95.513h134.55 c25.805-10.347,47.578-24.261,64.721-41.405C518.675,172.675,518.675,129.137,491.917,102.379z"/></g>
+        <g><path d="M240.822,219.371V84.821c-10.347-25.805-24.261-47.578-41.405-64.72C186.041,6.724,168.463,0.032,150.891,0.032 c-17.576,0-35.146,6.688-48.527,20.068C89.74,32.725,82.614,49.524,82.298,67.404l-0.259,14.65l-14.65,0.259 c-17.88,0.317-34.68,7.443-47.305,20.068c-26.755,26.757-26.755,70.295,0.001,97.052c17.144,17.143,38.917,31.057,64.721,41.404 h134.55l-95.513-95.513l21.466-21.466L240.822,219.371z"/></g>
+    </svg>
+
+    <span class="text-white">CloverBank</span>
+    <button class="btn btn-sm btn-outline-light ms-3 rounded-circle" onclick="adminModal.show()" title="Вхід для персоналу">
+        <i class="bi bi-lock-fill"></i>
+    </button>
+</span>
+    <div class="d-flex gap-3 align-items-center">
+      <button id="langToggle" class="btn btn-sm text-white rounded-pill px-3 fw-bold lang-btn" onclick="toggleLanguage()">
+        🇬🇧 EN
+      </button>
+
+      <div class="d-flex gap-2">
+        <button id="mainActionButton" class="btn btn-pink fw-bold text-white px-4 py-2 rounded-pill shadow-sm" onclick="startFlow()">
+          <i class="bi bi-ticket-perforated me-1"></i> <span id="txt-take-ticket">Взяти талон</span>
+        </button>
+        <button id="logoutButton" class="btn btn-outline-light rounded-pill d-none" onclick="logoutUser()">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <h3 class="mb-4 text-center fw-bold text-muted" id="txt-main-title">Електронне табло</h3>
+
+  <div id="windowsList" class="row g-4 justify-content-center"></div>
+
+  <div class="row g-4 mt-2 mb-5">
+    <div class="col-md-7">
+      <div class="card h-100 shadow-sm border-0" style="border-radius: 16px;">
+        <div class="card-header bg-white border-0 pt-4 pb-2">
+          <h5 class="fw-bold text-muted mb-0"><i class="bi bi-bar-chart-fill me-2" style="color: var(--bank-olive);"></i><span id="txt-stats-title">Завантаженість за послугами</span></h5>
+        </div>
+        <div class="card-body px-4 pt-2" id="serviceStatsList"></div>
+      </div>
+    </div>
+
+    <div class="col-md-5 d-flex flex-column gap-3">
+      <div class="card shadow-sm border-0 flex-grow-1" style="background-color: var(--bank-olive); color: white; border-radius: 16px;">
+        <div class="card-body text-center d-flex flex-column justify-content-center py-4">
+          <div id="liveClock" class="display-4 fw-bold mb-1" style="font-family: monospace;">00:00:00</div>
+          <div id="liveDate" class="text-white-50 mb-4 fw-semibold">...</div>
+
+          <div class="bg-white rounded-4 p-3 text-dark mx-2 shadow-sm text-start mb-2">
+            <h6 class="fw-bold text-muted mb-3 text-uppercase text-center" style="font-size: 0.8rem;" id="txt-next-title">Наступні в черзі:</h6>
+            <div id="nextTicketsList"></div>
+          </div>
+        </div>
+      </div>
+
+      <a href="/currency" class="card shadow-sm border-0 text-decoration-none" style="border-radius: 16px; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+        <div class="card-body p-3 text-center">
+          <h6 class="fw-bold text-muted mb-3">
+            <i class="bi bi-currency-exchange me-2" style="color: var(--bank-olive);"></i><span id="txt-currency-title">Курс валют на сьогодні</span>
+            <i class="bi bi-chevron-right float-end text-black-50"></i>
+          </h6>
+          <div class="d-flex justify-content-evenly align-items-center">
+            <div>
+              <strong class="text-dark fs-5">USD</strong>
+              <div class="small fw-bold mt-1"><span class="text-success" id="usdBuy">...</span> <span class="text-muted mx-1">/</span> <span class="text-danger" id="usdSell">...</span></div>
+            </div>
+            <div style="height: 35px; width: 2px; background-color: #eaeaea;"></div>
+            <div>
+              <strong class="text-dark fs-5">EUR</strong>
+              <div class="small fw-bold mt-1"><span class="text-success" id="eurBuy">...</span> <span class="text-muted mx-1">/</span> <span class="text-danger" id="eurSell">...</span></div>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+ <div class="modal fade" id="loginModal" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg">
+      <div class="modal-header modal-header-olive border-0">
+        <h5 class="modal-title fw-bold" id="txt-modal-auth-title"><i class="bi bi-person-circle me-2"></i>Авторизація</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="mb-3">
+          <label class="form-label fw-bold text-muted" id="txt-modal-name">Ваше ПІБ</label>
+          <input type="text" id="userName" class="form-control form-control-lg bg-light" onkeydown="if(event.key === 'Enter') submitLogin()">
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-bold text-muted" id="txt-modal-phone">Номер телефону</label>
+          <input type="text" id="userPhone" class="form-control form-control-lg bg-light" onkeydown="if(event.key === 'Enter') submitLogin()">
+        </div>
+        <button class="btn btn-olive btn-lg w-100" onclick="submitLogin()"><span id="txt-modal-btn-continue">Продовжити</span> <i class="bi bi-arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="serviceModal" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg">
+      <div class="modal-header modal-header-olive border-0">
+        <h5 class="modal-title fw-bold" id="txt-modal-service-title"><i class="bi bi-list-check me-2"></i>Оберіть послугу</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="d-grid gap-2" id="servicesList">
+          <button th:each="service : ${services}"
+                  class="btn btn-service d-flex justify-content-between align-items-center"
+                  th:data-service="${service.name()}"
+                  onclick="takeTicket(this.getAttribute('data-service'))">
+            <span th:text="${service.description}"></span>
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="ticketModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg">
+      <div class="modal-header bg-success text-white border-0" style="border-radius: 20px 20px 0 0;">
+        <h5 class="modal-title fw-bold" id="txt-modal-ticket-title"><i class="bi bi-check-circle-fill me-2"></i>Ваш талон</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center p-5" style="background-color: #f8fff4; border-radius: 0 0 20px 20px;">
+        <p class="text-muted mb-0 fw-bold text-uppercase" id="tService"></p>
+        <div class="ticket-number my-2" id="tNumber"></div>
+        <hr style="border-color: #7A8E4A; opacity: 0.3;">
+        <p class="mb-1 text-muted" id="txt-modal-time">Орієнтовний час прийому:</p>
+        <h4 id="tTime" class="fw-bold" style="color: var(--bank-olive);"></h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="adminLoginModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content shadow-lg">
+      <div class="modal-header bg-dark text-white border-0">
+        <h6 class="modal-title fw-bold">Staff Access</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="mb-3"><input type="text" id="adminUser" class="form-control" placeholder="Login" onkeydown="if(event.key === 'Enter') submitAdminLogin()"></div>
+        <div class="mb-3"><input type="password" id="adminPass" class="form-control" placeholder="Password" onkeydown="if(event.key === 'Enter') submitAdminLogin()"></div>
+        <button class="btn btn-dark w-100" onclick="submitAdminLogin()">Enter</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- БАГАТОМОВНІСТЬ (i18n) ---
+  let currentLang = localStorage.getItem('bankLang') || 'uk';
+
+  const i18n = {
+    uk: {
+      langBtn: "🇬🇧 EN",
+      takeTicket: "Взяти талон",
+      myTicket: "Ваш талон",
+      mainTitle: "Електронне табло",
+      statsTitle: "Завантаженість за послугами",
+      nextTitle: "Наступні в черзі:",
+      currencyTitle: "Курс валют на сьогодні",
+      windowPrefix: "Вікно",
+      inQueue: "В черзі:",
+      statusFree: "ВІЛЬНО",
+      statusEmptyQueue: "Черга наразі порожня",
+      statusNoWait: "Наразі очікуючих немає",
+      toWindow: "до вікна",
+      modalAuthTitle: "Авторизація",
+      modalName: "Ваше ПІБ",
+      modalPhone: "Номер телефону",
+      modalBtnContinue: "Продовжити",
+      modalServiceTitle: "Оберіть послугу",
+      modalTicketTitle: "Ваш талон",
+      modalTime: "Орієнтовний час прийому:",
+      services: {
+        "CASH_OPERATIONS": "Касові операції", "TRANSFERS": "Грошові перекази",
+        "LOANS": "Кредитування", "MORTGAGE": "Іпотека", "DEPOSITS": "Депозити",
+        "BANK_CARDS": "Банківські картки", "PAYMENTS": "Платежі"
+      }
+    },
+    en: {
+      langBtn: "🇺🇦 UK",
+      takeTicket: "Take a ticket",
+      myTicket: "Your ticket",
+      mainTitle: "Electronic Queue Board",
+      statsTitle: "Service Workload",
+      nextTitle: "Next in line:",
+      currencyTitle: "Exchange Rates Today",
+      windowPrefix: "Desk",
+      inQueue: "Waiting:",
+      statusFree: "AVAILABLE",
+      statusEmptyQueue: "The queue is currently empty",
+      statusNoWait: "No clients waiting",
+      toWindow: "to desk",
+      modalAuthTitle: "Authorization",
+      modalName: "Full Name",
+      modalPhone: "Phone Number",
+      modalBtnContinue: "Continue",
+      modalServiceTitle: "Select a Service",
+      modalTicketTitle: "Your Ticket",
+      modalTime: "Estimated service time:",
+      services: {
+        "CASH_OPERATIONS": "Cash Operations", "TRANSFERS": "Money Transfers",
+        "LOANS": "Loans", "MORTGAGE": "Mortgage", "DEPOSITS": "Deposits",
+        "BANK_CARDS": "Bank Cards", "PAYMENTS": "Payments"
+      }
+    }
+  };
+
+  function applyLanguage() {
+    const dict = i18n[currentLang];
+    document.getElementById('langToggle').innerText = dict.langBtn;
+    document.getElementById('txt-main-title').innerText = dict.mainTitle;
+    document.getElementById('txt-stats-title').innerText = dict.statsTitle;
+    document.getElementById('txt-next-title').innerText = dict.nextTitle;
+    document.getElementById('txt-currency-title').innerText = dict.currencyTitle;
+
+    document.getElementById('txt-modal-auth-title').innerHTML = `<i class="bi bi-person-circle me-2"></i>${dict.modalAuthTitle}`;
+    document.getElementById('txt-modal-name').innerText = dict.modalName;
+    document.getElementById('txt-modal-phone').innerText = dict.modalPhone;
+    document.getElementById('txt-modal-btn-continue').innerText = dict.modalBtnContinue;
+    document.getElementById('txt-modal-service-title').innerHTML = `<i class="bi bi-list-check me-2"></i>${dict.modalServiceTitle}`;
+    document.getElementById('txt-modal-ticket-title').innerHTML = `<i class="bi bi-check-circle-fill me-2"></i>${dict.modalTicketTitle}`;
+    document.getElementById('txt-modal-time').innerText = dict.modalTime;
+
+    checkMyTicket(); // Оновлюємо кнопку в хедері
+    updateDashboard(); // Оновлюємо динамічні дані
+  }
+
+  function toggleLanguage() {
+    currentLang = currentLang === 'uk' ? 'en' : 'uk';
+    localStorage.setItem('bankLang', currentLang);
+    applyLanguage();
+  }
+
+  // --- СТАРА ЛОГІКА, АЛЕ З ПІДТРИМКОЮ ПЕРЕКЛАДІВ ---
+  const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+  const serviceModal = new bootstrap.Modal(document.getElementById('serviceModal'));
+  const ticketModal = new bootstrap.Modal(document.getElementById('ticketModal'));
+  const adminModal = new bootstrap.Modal(document.getElementById('adminLoginModal'));
+  let currentTicket = null;
+
+  // Обробка авто-послуги (з конвертера)
+  const urlParams = new URLSearchParams(window.location.search);
+  const autoService = urlParams.get('auto');
+  if (autoService) { setTimeout(() => startFlow(), 500); }
+
+  function startFlow() {
+    if (currentTicket) showTicketModal(currentTicket);
+    else loginModal.show();
+  }
+
+  function submitLogin() {
+    const name = document.getElementById('userName').value.trim();
+    const phone = document.getElementById('userPhone').value.trim();
+    if(!name || !phone) return;
+
+    fetch(`/api/login?name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}`, { method: 'POST' })
+            .then(() => {
+              loginModal.hide();
+              fetch('/api/my-ticket').then(res => res.text()).then(text => {
+                if (text) {
+                  currentTicket = JSON.parse(text);
+                  checkMyTicket(); showTicketModal(currentTicket);
+                } else {
+                  if (autoService) {
+                    takeTicket(autoService);
+                    window.history.replaceState(null, null, window.location.pathname);
+                  } else {
+                    serviceModal.show();
+                  }
+                }
+              });
+            });
+  }
+
+  function takeTicket(serviceName) {
+    fetch('/api/ticket?serviceName=' + serviceName, { method: 'POST' })
+            .then(res => res.json()).then(ticket => {
+      serviceModal.hide(); checkMyTicket(); showTicketModal(ticket);
+    });
+  }
+
+  function showTicketModal(ticket) {
+    document.getElementById('tNumber').innerText = ticket.ticketNumber;
+    document.getElementById('tService').innerText = i18n[currentLang].services[ticket.requestedService] || ticket.requestedService;
+    const time = new Date(ticket.estimatedServiceTime);
+    document.getElementById('tTime').innerText = time.toLocaleTimeString(currentLang === 'uk' ? 'uk-UA' : 'en-US', { hour: '2-digit', minute: '2-digit' });
+    ticketModal.show();
+  }
+
+  function checkMyTicket() {
+    fetch('/api/my-ticket').then(res => res.text()).then(text => {
+      const btn = document.getElementById('txt-take-ticket');
+      const parentBtn = document.getElementById('mainActionButton');
+      const logoutBtn = document.getElementById('logoutButton');
+
+      if (text) {
+        currentTicket = JSON.parse(text);
+        btn.innerText = i18n[currentLang].myTicket;
+        parentBtn.classList.replace('btn-pink', 'btn-dark'); // ТУТ: змінюємо рожевий на сірий
+        logoutBtn.classList.remove('d-none');
+      } else {
+        currentTicket = null;
+        btn.innerText = i18n[currentLang].takeTicket;
+        parentBtn.classList.replace('btn-dark', 'btn-pink'); // ТУТ: повертаємо рожевий колір
+        logoutBtn.classList.add('d-none');
+      }
+    });
+  }
+
+  function submitAdminLogin() {
+    const u = document.getElementById('adminUser').value; const p = document.getElementById('adminPass').value;
+    fetch(`/api/admin/login?username=${u}&password=${p}`, { method: 'POST' }).then(async res => {
+      if(res.ok) window.location.href = '/admin';
+    });
+  }
+
+  function logoutUser() {
+    fetch('/api/logout', { method: 'POST' }).then(() => {
+      currentTicket = null; document.getElementById('userName').value = ''; document.getElementById('userPhone').value = ''; checkMyTicket();
+    });
+  }
+
+  function updateDashboard() {
+    const dict = i18n[currentLang];
+    fetch('/api/state').then(response => response.json()).then(data => {
+      const windowsDiv = document.getElementById('windowsList');
+      windowsDiv.innerHTML = '';
+      data.windows.forEach(w => {
+        let isFree = w.free;
+        let waitingCount = data.waitingCounts[w.windowNumber] || 0;
+        let statusHtml = isFree ?
+                `<h3 class="text-success my-4 fw-bold"><i class="bi bi-check-circle me-2"></i>${dict.statusFree}</h3>` :
+                `<h1 class="my-3 fw-bold" style="color: var(--bank-olive);">${w.currentClient.ticketNumber}</h1>`;
+        let borderColor = isFree ? 'border-success' : 'border-secondary';
+
+        windowsDiv.innerHTML += `
+                    <div class="col-md-4">
+                        <div class="card window-card h-100 ${borderColor} border-2">
+                            <div class="card-header d-flex justify-content-between align-items-center py-3 bg-white">
+                                <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-display me-2 text-muted"></i>${dict.windowPrefix} ${w.windowNumber}</h5>
+                                <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">${dict.inQueue} ${waitingCount}</span>
+                            </div>
+                            <div class="card-body text-center d-flex flex-column justify-content-center py-4 bg-white" style="border-radius: 0 0 16px 16px;">
+                                ${statusHtml}
+                            </div>
+                        </div>
+                    </div>`;
+      });
+
+      const statsDiv = document.getElementById('serviceStatsList');
+      statsDiv.innerHTML = '';
+      let hasPeople = false;
+      if (data.serviceCounts) {
+        for (const [serviceKey, count] of Object.entries(data.serviceCounts)) {
+          // Шукаємо переклад сервісу по ключу, якщо немає - беремо оригінал
+          let translatedService = Object.values(i18n['uk'].services).includes(serviceKey) ?
+                  dict.services[Object.keys(i18n['uk'].services).find(k => i18n['uk'].services[k] === serviceKey)] : serviceKey;
+
+          let isZero = count === 0;
+          let badgeClass = isZero ? 'bg-light text-muted border' : 'text-white shadow-sm';
+          let badgeStyle = isZero ? '' : 'background-color: var(--bank-olive);';
+          let textClass = isZero ? 'text-muted' : 'text-dark fw-bold';
+
+          statsDiv.innerHTML += `
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom" style="${isZero ? 'opacity: 0.6;' : ''}">
+                            <span class="${textClass}" style="font-size: 0.95rem;">${translatedService}</span>
+                            <span class="badge rounded-pill ${badgeClass} px-3 py-2 fs-6" style="${badgeStyle}">
+                                ${count} <i class="bi bi-person-fill ms-1 ${isZero ? 'text-muted' : 'text-white-50'}"></i>
+                            </span>
+                        </div>`;
+        }
+      }
+
+      const nextDiv = document.getElementById('nextTicketsList');
+      if (data.nextTickets && data.nextTickets.length > 0) {
+        nextDiv.innerHTML = data.nextTickets.map(t =>
+                `<div class="next-ticket-item d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                        <span class="badge fs-6 shadow-sm" style="background-color: var(--bank-olive-light);">${t.number}</span>
+                        <span class="text-muted small">${dict.toWindow} <b>${t.windows}</b></span>
+                    </div>`
+        ).join('');
+      } else {
+        nextDiv.innerHTML = `<div class="text-center text-muted small py-2">${dict.statusNoWait}</div>`;
+      }
+    });
+  }
+
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('liveClock').innerText = now.toLocaleTimeString(currentLang === 'uk' ? 'uk-UA' : 'en-US');
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    let dateStr = now.toLocaleDateString(currentLang === 'uk' ? 'uk-UA' : 'en-US', options);
+    document.getElementById('liveDate').innerText = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+  }
+
+  function fetchCurrencyAPI() {
+    fetch('/api/currency').then(response => response.json()).then(data => {
+      const usd = data.find(c => c.ccy === 'USD'); const eur = data.find(c => c.ccy === 'EUR');
+      if (usd && eur) {
+        document.getElementById('usdBuy').innerText = parseFloat(usd.buy).toFixed(2);
+        document.getElementById('usdSell').innerText = parseFloat(usd.sale).toFixed(2);
+        document.getElementById('eurBuy').innerText = parseFloat(eur.buy).toFixed(2);
+        document.getElementById('eurSell').innerText = parseFloat(eur.sale).toFixed(2);
+      }
+    }).catch(e => console.log(e));
+  }
+
+  setInterval(updateClock, 1000);
+  setInterval(updateDashboard, 2000);
+
+  applyLanguage(); // Застосовуємо мову при старті
+  updateClock();
+  fetchCurrencyAPI();
+</script>
+
+</body>
+</html>

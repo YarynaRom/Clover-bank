@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>CloverBank - Курс валют</title>
+  <link rel="icon" type="image/png" href="/images/clover-logo.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/style.css}">
+  <style>
+    body { background-color: var(--bank-bg); }
+    .currency-table th { background-color: #f8f9fa; color: #6c757d; font-weight: 600; border-bottom: 2px solid var(--bank-olive); }
+    .currency-table td { vertical-align: middle; padding: 15px; font-weight: 600;}
+    .converter-card { background: white; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #eaeaea; }
+    .form-select, .form-control { border-radius: 12px; border: 1px solid #ddd; padding: 12px; font-weight: 600;}
+    .form-select:focus, .form-control:focus { border-color: var(--bank-olive); box-shadow: 0 0 0 0.25rem rgba(122, 142, 74, 0.25); }
+    .lang-btn { transition: all 0.2s; border: 1px solid rgba(255,255,255,0.5); }
+    .lang-btn:hover { background-color: rgba(255,255,255,0.2); border-color: white; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark navbar-custom mb-5 py-3 shadow-sm">
+  <div class="container">
+        <span class="navbar-brand mb-0 h3 fw-bold d-flex align-items-center">
+           <svg fill="white" height="34" width="34" class="me-2" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512.002 512.002" xml:space="preserve">
+        <g><path d="M491.917,312.599c-17.144-17.143-38.916-31.057-64.722-41.404h-134.55l95.513,95.513l-21.466,21.466l-95.513-95.513 v134.55c10.347,25.805,24.261,47.578,41.405,64.721c13.377,13.377,30.955,20.066,48.527,20.068 c17.576,0.001,35.146-6.688,48.527-20.068c12.625-12.625,19.751-29.425,20.067-47.304l0.259-14.65l14.65-0.259 c17.88-0.317,34.68-7.443,47.305-20.068C518.675,382.894,518.675,339.356,491.917,312.599z"/></g>
+        <g><path d="M145.309,388.174l-21.466-21.466l95.513-95.513H84.806c-25.805,10.347-47.578,24.261-64.721,41.405 c-26.757,26.757-26.757,70.295,0,97.053c12.625,12.625,29.425,19.751,47.304,20.067l14.65,0.259l0.259,14.65 c0.317,17.88,7.443,34.68,20.068,47.305c26.756,26.756,70.294,26.757,97.053,0c17.142-17.146,31.056-38.917,41.403-64.724v-134.55 L145.309,388.174z"/></g>
+        <g><path d="M491.917,102.379c-12.625-12.625-29.425-19.751-47.304-20.067l-14.65-0.259l-0.259-14.65 c-0.317-17.88-7.443-34.68-20.067-47.304C396.675,7.139,379.441,0,361.11,0c-18.331,0-35.564,7.138-48.527,20.1 c-17.143,17.144-31.057,38.915-41.404,64.721v134.551l95.513-95.513l21.466,21.466l-95.513,95.513h134.55 c25.805-10.347,47.578-24.261,64.721-41.405C518.675,172.675,518.675,129.137,491.917,102.379z"/></g>
+        <g><path d="M240.822,219.371V84.821c-10.347-25.805-24.261-47.578-41.405-64.72C186.041,6.724,168.463,0.032,150.891,0.032 c-17.576,0-35.146,6.688-48.527,20.068C89.74,32.725,82.614,49.524,82.298,67.404l-0.259,14.65l-14.65,0.259 c-17.88,0.317-34.68,7.443-47.305,20.068c-26.755,26.757-26.755,70.295,0.001,97.052c17.144,17.143,38.917,31.057,64.721,41.404 h134.55l-95.513-95.513l21.466-21.466L240.822,219.371z"/></g>
+    </svg>
+<span class="text-white">CloverBank</span>
+        </span>
+    <div class="d-flex gap-3 align-items-center">
+      <button id="langToggle" class="btn btn-sm text-white rounded-pill px-3 fw-bold lang-btn" onclick="toggleLanguage()">
+        🇬🇧 EN
+      </button>
+      <a href="/" class="btn btn-outline-light rounded-pill px-4 fw-bold">
+        <i class="bi bi-arrow-left me-2"></i> <span id="txt-back">На головне табло</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="container mb-5">
+  <h2 class="fw-bold text-muted mb-4"><i class="bi bi-cash-coin me-2" style="color: var(--bank-olive);"></i><span id="txt-title">Курс валют та конвертер</span></h2>
+
+  <div class="row g-5">
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden;">
+        <div class="card-body p-0">
+          <table class="table table-hover currency-table mb-0">
+            <thead>
+            <tr>
+              <th class="ps-4" id="txt-th-currency">Валюта</th>
+              <th class="text-center" id="txt-th-buy">Купівля</th>
+              <th class="text-center" id="txt-th-sell">Продаж</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td class="ps-4"><i class="bi bi-currency-euro text-primary fs-5 me-2"></i> <strong>EUR</strong> <span class="text-muted small ms-1" id="txt-cur-eur">Євро</span></td>
+              <td class="text-center text-success" id="tbl-eur-buy">42.80</td>
+              <td class="text-center text-danger" id="tbl-eur-sell">43.30</td>
+            </tr>
+            <tr>
+              <td class="ps-4"><i class="bi bi-currency-dollar text-success fs-5 me-2"></i> <strong>USD</strong> <span class="text-muted small ms-1" id="txt-cur-usd">Долар США</span></td>
+              <td class="text-center text-success" id="tbl-usd-buy">39.50</td>
+              <td class="text-center text-danger" id="tbl-usd-sell">39.95</td>
+            </tr>
+            <tr>
+              <td class="ps-4"><i class="bi bi-currency-pound text-danger fs-5 me-2"></i> <strong>GBP</strong> <span class="text-muted small ms-1" id="txt-cur-gbp">Фунт стерлінгів</span></td>
+              <td class="text-center text-success">49.10</td>
+              <td class="text-center text-danger">49.80</td>
+            </tr>
+            <tr>
+              <td class="ps-4"><span class="fs-5 me-2" style="color: #dc143c;">zł</span> <strong>PLN</strong> <span class="text-muted small ms-1" id="txt-cur-pln">Польський злотий</span></td>
+              <td class="text-center text-success">9.75</td>
+              <td class="text-center text-danger">10.05</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="converter-card p-4">
+        <h5 class="fw-bold text-dark mb-4" id="txt-conv-title">Обмін валют онлайн</h5>
+
+        <div class="mb-3">
+          <label class="form-label text-muted small fw-bold" id="txt-conv-have">У мене є:</label>
+          <div class="input-group">
+            <input type="number" id="calcAmount" class="form-control form-control-lg" value="100" oninput="calculateExchange()">
+            <select id="calcFrom" class="form-select form-select-lg" style="max-width: 100px;" onchange="calculateExchange()">
+              <option value="UAH">UAH</option>
+              <option value="USD" selected>USD</option>
+              <option value="EUR">EUR</option>
+              <option value="GBP">GBP</option>
+              <option value="PLN">PLN</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="text-center my-3">
+          <button class="btn btn-light rounded-circle shadow-sm" onclick="swapCurrencies()" style="width: 45px; height: 45px;">
+            <i class="bi bi-arrow-down-up" style="color: var(--bank-olive);"></i>
+          </button>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label text-muted small fw-bold" id="txt-conv-get">Я отримаю:</label>
+          <div class="input-group">
+            <input type="text" id="calcResult" class="form-control form-control-lg bg-light text-dark fw-bold" readonly>
+            <select id="calcTo" class="form-select form-select-lg bg-light" style="max-width: 100px;" onchange="calculateExchange()">
+              <option value="UAH" selected>UAH</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="GBP">GBP</option>
+              <option value="PLN">PLN</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-olive w-100 py-3 rounded-pill fw-bold shadow-sm" onclick="window.location.href='/?auto=CASH_OPERATIONS'">
+          <span id="txt-btn-ticket">Оформити талон на касу</span> <i class="bi bi-arrow-right ms-1"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- БАГАТОМОВНІСТЬ (i18n) ---
+  // Читаємо мову, яку клієнт обрав на головній сторінці
+  let currentLang = localStorage.getItem('bankLang') || 'uk';
+
+  const i18n = {
+    uk: {
+      langBtn: "🇬🇧 EN",
+      back: "На головне табло",
+      title: "Курс валют та конвертер",
+      thCurrency: "Валюта",
+      thBuy: "Купівля",
+      thSell: "Продаж",
+      curEur: "Євро",
+      curUsd: "Долар США",
+      curGbp: "Фунт стерлінгів",
+      curPln: "Польський злотий",
+      convTitle: "Обмін валют онлайн",
+      convHave: "У мене є:",
+      convGet: "Я отримаю:",
+      btnTicket: "Оформити талон на касу"
+    },
+    en: {
+      langBtn: "🇺🇦 UK",
+      back: "Back to Main Board",
+      title: "Exchange Rates & Converter",
+      thCurrency: "Currency",
+      thBuy: "Buy",
+      thSell: "Sell",
+      curEur: "Euro",
+      curUsd: "US Dollar",
+      curGbp: "British Pound",
+      curPln: "Polish Zloty",
+      convTitle: "Online Currency Exchange",
+      convHave: "I have:",
+      convGet: "I will get:",
+      btnTicket: "Get a ticket to the cashier"
+    }
+  };
+
+  function applyLanguage() {
+    const dict = i18n[currentLang];
+    document.getElementById('langToggle').innerText = dict.langBtn;
+    document.getElementById('txt-back').innerText = dict.back;
+    document.getElementById('txt-title').innerText = dict.title;
+    document.getElementById('txt-th-currency').innerText = dict.thCurrency;
+    document.getElementById('txt-th-buy').innerText = dict.thBuy;
+    document.getElementById('txt-th-sell').innerText = dict.thSell;
+    document.getElementById('txt-cur-eur').innerText = dict.curEur;
+    document.getElementById('txt-cur-usd').innerText = dict.curUsd;
+    document.getElementById('txt-cur-gbp').innerText = dict.curGbp;
+    document.getElementById('txt-cur-pln').innerText = dict.curPln;
+    document.getElementById('txt-conv-title').innerText = dict.convTitle;
+    document.getElementById('txt-conv-have').innerText = dict.convHave;
+    document.getElementById('txt-conv-get').innerText = dict.convGet;
+    document.getElementById('txt-btn-ticket').innerText = dict.btnTicket;
+  }
+
+  function toggleLanguage() {
+    currentLang = currentLang === 'uk' ? 'en' : 'uk';
+    localStorage.setItem('bankLang', currentLang); // Запам'ятовуємо вибір
+    applyLanguage();
+  }
+
+  // --- ЛОГІКА КАЛЬКУЛЯТОРА ---
+  const rates = { "UAH": 1.0, "USD": 39.95, "EUR": 43.30, "GBP": 49.80, "PLN": 10.05 };
+
+  function fetchRealRates() {
+    fetch('/api/currency')
+            .then(res => res.json())
+            .then(data => {
+              const usd = data.find(c => c.ccy === 'USD');
+              const eur = data.find(c => c.ccy === 'EUR');
+
+              if (usd && eur) {
+                document.getElementById('tbl-usd-buy').innerText = parseFloat(usd.buy).toFixed(2);
+                document.getElementById('tbl-usd-sell').innerText = parseFloat(usd.sale).toFixed(2);
+                document.getElementById('tbl-eur-buy').innerText = parseFloat(eur.buy).toFixed(2);
+                document.getElementById('tbl-eur-sell').innerText = parseFloat(eur.sale).toFixed(2);
+
+                rates["USD"] = parseFloat(usd.sale);
+                rates["EUR"] = parseFloat(eur.sale);
+                calculateExchange();
+              }
+            }).catch(e => console.log("API Error", e));
+  }
+
+  function calculateExchange() {
+    const amount = parseFloat(document.getElementById('calcAmount').value) || 0;
+    const fromCurrency = document.getElementById('calcFrom').value;
+    const toCurrency = document.getElementById('calcTo').value;
+
+    const amountInUah = amount * rates[fromCurrency];
+    const result = amountInUah / rates[toCurrency];
+
+    document.getElementById('calcResult').value = result.toFixed(2);
+  }
+
+  function swapCurrencies() {
+    const fromSelect = document.getElementById('calcFrom');
+    const toSelect = document.getElementById('calcTo');
+    const temp = fromSelect.value;
+    fromSelect.value = toSelect.value;
+    toSelect.value = temp;
+    calculateExchange();
+  }
+
+  // Запуск
+  applyLanguage(); // Одразу застосовуємо мову при завантаженні
+  fetchRealRates();
+  calculateExchange();
+</script>
+</body>
+</html>

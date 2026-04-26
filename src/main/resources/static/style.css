@@ -1,0 +1,86 @@
+:root {
+    /* Головний оливковий колір */
+    --bank-olive: #556832;
+    /* Світлий оливковий (для акцентів) */
+    --bank-olive-light: #7BA05B;
+    /* Дуже світлий фон сторінки */
+    --bank-bg: #f4f9f6;
+    --bank-dark: #2c3e50;
+}
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: var(--bank-bg);
+    color: #333;
+}
+
+/* Стиль для верхньої панелі */
+.navbar-custom {
+    background-color: var(--bank-olive);
+    box-shadow: 0 4px 12px rgba(90, 107, 49, 0.2);
+}
+
+/* Заокруглені картки з м'якою тінню */
+.card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s;
+}
+
+/* Картки вікон (трохи підіймаються при наведенні) */
+.window-card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    background-color: transparent;
+    border-bottom: 2px solid #eaeaea;
+    font-weight: 800;
+}
+
+/* Оливкові кнопки */
+.btn-olive {
+    background-color: var(--bank-olive);
+    color: white;
+    border-radius: 10px;
+    font-weight: 600;
+}
+.btn-olive:hover {
+    background-color: var(--bank-olive-light);
+    color: white;
+}
+
+/* Кнопки вибору послуг */
+.btn-service {
+    border: 2px solid var(--bank-olive-light);
+    color: var(--bank-olive);
+    border-radius: 12px;
+    font-weight: 600;
+    padding: 12px;
+    text-align: left;
+    transition: all 0.3s;
+}
+.btn-service:hover {
+    background-color: var(--bank-olive-light);
+    color: white;
+}
+
+/* Модальні вікна (Pop-ups) */
+.modal-content {
+    border-radius: 20px;
+    border: none;
+}
+.modal-header-olive {
+    background-color: var(--bank-olive);
+    color: white;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+/* Величезний номер талону */
+.ticket-number {
+    color: var(--bank-olive);
+    font-size: 4rem;
+    font-weight: 800;
+}
