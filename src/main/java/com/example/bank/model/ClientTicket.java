@@ -1,5 +1,5 @@
 package com.example.bank.model;
-
+import java.time.ZoneId;
 import java.time.LocalDateTime;
 
 public class ClientTicket {
@@ -15,7 +15,7 @@ public class ClientTicket {
         this.requestedService = requestedService;
         this.client = client;
         this.estimatedServiceTime = estimatedTime;
-        this.arrivalTime = LocalDateTime.now();
+        this.arrivalTime = LocalDateTime.now(ZoneId.of("Europe/Kyiv"));
         this.isServed = false;
     }
 
