@@ -1,12 +1,19 @@
 package com.example.bank.model;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.ZoneId;
 import java.time.LocalDateTime;
 
 public class ClientTicket {
     private String ticketNumber;
     private ServiceType requestedService;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime arrivalTime;
-    private LocalDateTime estimatedServiceTime; // Орієнтовний час обслуговування
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime estimatedServiceTime;
+
     private User client;
     private boolean isServed;
 
